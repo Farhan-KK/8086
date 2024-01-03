@@ -1,0 +1,62 @@
+.model
+
+.data
+	msg1 db 13,10,"Enter first string: $"
+	msg2 db 13,10,"Enter second string: $"
+	msg3 db 13,10,"Concatenated String: $"
+	newline db 13,10
+	space db "$"
+	buffer db 30 dup("$")
+
+.code
+.stack
+
+start:
+	mov ax,@data
+	mov ds,ax
+	
+	lea dx,msg1
+	call print_str
+
+	lea si,buffer
+	call input_str
+
+	mov byte ptr [si],' '
+	inc si
+
+	lea dx,msg2
+	call print_str
+
+	call input_str
+
+	lea dx,msg3
+	call print_str
+
+	lea dx,buffer
+	call print_str
+
+	mov ah,4ch
+	int 21h
+
+
+
+input_str proc
+	input:
+		mov ah,01h
+		int 21h
+		cmp al,13
+		je exit_from_input
+		mov [si],al
+		inc si
+		jmp input
+	exit_from_input:
+		ret
+input_str endp
+
+print_str proc
+	mov ah,09h
+	int 21h
+	ret
+print_str endp
+
+end start
