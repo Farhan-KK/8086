@@ -1,0 +1,58 @@
+.model
+
+.data
+	msg1 db 13,10,"Enter first string: $"
+	buffer db 30 dup("$")
+
+
+.code
+.stack
+
+start:
+
+
+	mov ax,@data
+	mov ds,ax
+	
+	lea dx,msg1
+	call print_str
+
+	lea si,buffer
+	call input_str
+	
+	lea si,buffer
+	mov cl,0
+	find_length:
+		cmp byte ptr[si],"$"
+		je exit_length_find
+		inc cl
+		inc si
+		jmp find_length
+	
+	exit_length_find:
+		add cl,30h
+		mov dl,cl
+		mov ah,02h
+		int 21h
+
+
+	input_str proc
+		input:
+			mov ah,01h
+			int 21h
+			cmp al,13
+			je exit_from_input
+			mov [si],al
+			inc si
+			jmp input
+		exit_from_input:
+			ret
+	input_str endp
+
+	print_str proc
+		mov ah,09h
+		int 21h
+		ret
+	print_str endp
+
+end start
